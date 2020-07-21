@@ -3,10 +3,9 @@ const uuid = require('uuid').v4;
 module.exports.upload = async (event, context, callback) => {
     console.log(event.body);
 
+    if(!event.body)
+        return callback(null, { statusCode: 400, body: 'You done fucked up sir' });
     const body = JSON.parse(event.body);
-
-    if(!body)
-        return callback({ code: 400, message: 'You done fucked up sir' });
 
     // pattern code - string
     // user code - string
@@ -32,5 +31,5 @@ module.exports.upload = async (event, context, callback) => {
         Item: pattern
     }).promise();
 
-    return callback(null, { code: 200, message: 'you did the thing!!!?!' });
+    return callback(null, { statusCode: 200, body: 'you did the thing!!!?!' });
 }
