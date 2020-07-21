@@ -1,0 +1,33 @@
+service: nookwill
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-west-2
+  profile: nookwill
+  apiGateway: 
+    restApiId: s7n2l1h3d3 
+    restApiRootResourceId: z7m8itrfqa
+
+package:
+ individually: true
+ include:
+   - ./handler.js
+   - ./node_modules/**
+ exclude:
+   - .*/**
+
+functions:
+ upload:
+  handler: handler.upload
+  package:
+   include:
+    - ./upload.js
+  events:
+    - http:
+       path: api/patterns
+       method: POST
+       cors: true
+ 
+          
