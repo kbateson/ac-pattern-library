@@ -3,16 +3,9 @@ const uuid = require('uuid').v4;
 module.exports.upload = async (event, context, callback) => {
     console.log(event.body);
 
-    if(!event.body)
+    if (!event.body)
         return callback(null, { statusCode: 400, body: 'You done fucked up sir' });
     const body = JSON.parse(event.body);
-
-    // pattern code - string
-    // user code - string
-    // pattern name - string
-    // pattern image - img
-    // qr code image - img
-    // tags - array strings
 
     const imageName = `${uuid()}.png`;
 
@@ -25,11 +18,25 @@ module.exports.upload = async (event, context, callback) => {
     }
 
     console.log(JSON.stringify(pattern));
-    
-    await context.dynamo.put({
-        TableName: 'nookwill-user-patterns',
-        Item: pattern
-    }).promise();
+
+    var params = {
+        Body: body.pattern.image,
+        Bucket: 'nookwill-files',
+        ContentEncoding: 'base64',
+        ContentType: 'image/png',
+        Key: imageName
+    };
+
+    try {
+        let dynamoResponse = context.dynamo.put({
+            TableName: 'nookwill-user-patterns',
+            Item: pattern
+        }).promise();
+        let s3Response = context.s3.putObject(params).promise();
+        const responses = await Promise.all([dynamoResponse, s3Response]);
+    } catch(err) {
+        console.log(err);
+    }
 
     return callback(null, { statusCode: 200, body: 'you did the thing!!!?!' });
 }

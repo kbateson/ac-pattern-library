@@ -14,7 +14,6 @@ package:
  individually: true
  include:
    - ./handler.js
-   - ./node_modules/**
  exclude:
    - .*/**
 
@@ -24,6 +23,7 @@ functions:
   package:
    include:
     - ./upload.js
+    - ./node_modules/**
   events:
     - http:
        path: api/patterns
